@@ -109,7 +109,7 @@ app.get('/inspace', function(req, res){
 	for (var i = 0; i < rows.length; i++) {
 	    out.people.push(rows[i]);
 	}
-	res.header('Access-Control-Allow-Origin', "*")
+	res.header('Access-Control-Allow-Origin', "*");
 	res.jsonp(out);
     });
 });

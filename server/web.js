@@ -17,7 +17,7 @@ nconf.defaults({
 // Database setup
 var db = new sqlite3.Database('checkinout.db');
 db.serialize(function() {
-    db.run("CREATE TABLE people (name VARCHAR(60), cardid VARCHAR(25) PRIMARY KEY, checkin DATETIME, checkinid INTEGER)",
+    db.run("CREATE TABLE people (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(60), cardid VARCHAR(25) UNIQUE, checkin DATETIME, checkinid INTEGER)",
 	   function(err) {
 	       if (err) {
 		   console.log('Database already exists')
@@ -57,7 +57,7 @@ var addCheckinEvent = function(id, event) {
     db.serialize(function() {
 	db.get("SELECT * FROM people WHERE cardid=? LIMIT 1", id, function(err, row) {
     	    if (typeof row === 'undefined') {
-		db.run("INSERT INTO people VALUES(?, ?, ?, ?)", "", id, "", "");
+		db.run("INSERT INTO people (name, cardid) VALUES(?, ?)", "", id);
 		console.log("Added new card: "+id);
     	    } else {
 		console.log("Exisiting card: "+row.cardid);
@@ -96,15 +96,27 @@ console.log("Arduino on: "+nconf.get('DEVICE'));
 
 // Set up web interface
 var app = express();
+app.use(express.logger());
+
+var allowCrossDomain = function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', "*")
+};
+// app.use(allowCrossDomain);
 
 app.get('/inspace', function(req, res){
-    db.get("SELECT name,checkin FROM people WHERE checkin IS NOT NULL", function(err, row) {
-	var out = {}
-	if (typeof row !== 'undefined') {
-	    out = row;
+    var out = { people: [] }
+    db.all("SELECT name,checkin FROM people WHERE checkin IS NOT NULL", function(err, rows) {
+	for (var i = 0; i < rows.length; i++) {
+	    out.people.push(rows[i]);
 	}
+	res.header('Access-Control-Allow-Origin', "*")
 	res.send(out);
     });
+});
+
+app.get('/', function(req, res){
+    res.header('Access-Control-Allow-Origin', "*")
+    res.send("Not quite there yet.");
 });
 
 var port = nconf.get('PORT');

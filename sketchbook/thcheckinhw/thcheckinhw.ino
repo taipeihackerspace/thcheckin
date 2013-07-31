@@ -192,43 +192,46 @@ void loop()
   //寻卡，返回卡类型
   status = MFRC522_Request(PICC_REQIDL, str);
   if (status == MI_OK) {   // card detected
-  }
 
-  //防冲撞，返回卡的序列号 4字节
-  status = MFRC522_Anticoll(str);
-  MFRC522_Halt();			//命令卡片进入休眠状态
-  memcpy(serNum, str, 5);
-  if (status == MI_OK) {
-    cardNumber += serNum[0];
-    cardNumber += "-";
-    cardNumber += serNum[1];
-    cardNumber += "-";
-    cardNumber += serNum[2];
-    cardNumber += "-";
-    cardNumber += serNum[3];
-    cardNumber += "-";
-    cardNumber += serNum[4];
+    //防冲撞，返回卡的序列号 4字节
+    status = MFRC522_Anticoll(str);
+    memcpy(serNum, str, 5);
+    MFRC522_Halt();			//命令卡片进入休眠状态
 
-    int checkInOut = askCheckInOut(10000);
-    if (checkInOut != CHECKTIMEOUT) {
-      String announce;
-      announce += cardNumber;
-      announce += ',';
-      announce += checkInOut;
-      Serial.println(announce);
-      if (checkInOut == CHECKIN) {
-        fastBlink(checkInLED, 50, 20);
-      } else if (checkInOut == CHECKOUT) {
-        fastBlink(checkOutLED, 50, 20);
+    if (status == MI_OK) {
+      cardNumber += serNum[0];
+      cardNumber += "-";
+      cardNumber += serNum[1];
+      cardNumber += "-";
+      cardNumber += serNum[2];
+      cardNumber += "-";
+      cardNumber += serNum[3];
+      cardNumber += "-";
+      cardNumber += serNum[4];
+
+      int checkInOut = askCheckInOut();
+      if (checkInOut != CHECKTIMEOUT) {
+        String announce;
+        announce += cardNumber;
+        announce += ',';
+        announce += checkInOut;
+        Serial.println(announce);
+        if (checkInOut == CHECKIN) {
+          fastBlink(checkInLED, 50, 20);
+        } else if (checkInOut == CHECKOUT) {
+          fastBlink(checkOutLED, 50, 20);
+        }
       }
     }
+  } else {
+    MFRC522_Halt();			//命令卡片进入休眠状态
   }
   delay(10);
 }
 
-int askCheckInOut(int timeoutms){
-  int timeOutAt = millis() + timeoutms;
-  while (millis() <= timeOutAt) {
+int askCheckInOut(){
+  int loopCount = 0;
+  while (loopCount < 200) {
     checkInState = digitalRead(checkInButton);
     checkOutState = digitalRead(checkOutButton);
     if (checkInState == HIGH) {
@@ -237,12 +240,13 @@ int askCheckInOut(int timeoutms){
       return(CHECKOUT);
     }
     if (checkInOutCounter % 10 == 0) {
-      fastBlink(checkInLED, 10, 1);
-      delay(50);
-      fastBlink(checkOutLED, 10, 1);
+      fastBlink(checkInLED, 5, 1);
+      delay(40);
+      fastBlink(checkOutLED, 5, 1);
     }
-    delay(50);
+    delay(40);
     checkInOutCounter++;
+    loopCount++;
   }
   return(CHECKTIMEOUT);
 }

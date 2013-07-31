@@ -99,9 +99,10 @@ var app = express();
 app.use(express.logger());
 
 var allowCrossDomain = function(req, res, next) {
-    res.header('Access-Control-Allow-Origin', "*")
+    res.header('Access-Control-Allow-Origin', "*");
+    next();
 };
-// app.use(allowCrossDomain);
+app.use(allowCrossDomain);
 
 app.get('/inspace', function(req, res){
     var out = { people: [] }
@@ -109,13 +110,11 @@ app.get('/inspace', function(req, res){
 	for (var i = 0; i < rows.length; i++) {
 	    out.people.push(rows[i]);
 	}
-	res.header('Access-Control-Allow-Origin', "*");
 	res.jsonp(out);
     });
 });
 
 app.get('/', function(req, res){
-    res.header('Access-Control-Allow-Origin', "*")
     res.send("Not quite there yet.");
 });
 

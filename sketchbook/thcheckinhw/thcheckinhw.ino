@@ -196,6 +196,7 @@ void loop()
 
   //防冲撞，返回卡的序列号 4字节
   status = MFRC522_Anticoll(str);
+  MFRC522_Halt();			//命令卡片进入休眠状态
   memcpy(serNum, str, 5);
   if (status == MI_OK) {
     cardNumber += serNum[0];
@@ -217,8 +218,7 @@ void loop()
       Serial.println(announce);
     }
   }
-  MFRC522_Halt();			//命令卡片进入休眠状态
-
+  delay(10);
 }
 
 int askCheckInOut(int timeoutms){

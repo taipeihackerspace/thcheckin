@@ -216,6 +216,11 @@ void loop()
       announce += ',';
       announce += checkInOut;
       Serial.println(announce);
+      if (checkInOut == CHECKIN) {
+        fastBlink(checkInLED, 50, 20);
+      } else if (checkInOut == CHECKOUT) {
+        fastBlink(checkOutLED, 50, 20);
+      }
     }
   }
   delay(10);
@@ -227,10 +232,8 @@ int askCheckInOut(int timeoutms){
     checkInState = digitalRead(checkInButton);
     checkOutState = digitalRead(checkOutButton);
     if (checkInState == HIGH) {
-      fastBlink(checkInLED, 50, 20);
       return(CHECKIN);
     } else if (checkOutState == HIGH) {
-      fastBlink(checkOutLED, 50, 20);
       return(CHECKOUT);
     }
     if (checkInOutCounter % 10 == 0) {

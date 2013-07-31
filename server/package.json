@@ -15,6 +15,7 @@
     "express": "~3.3.4",
     "serialport": "~1.1.1",
     "nconf": "~0.6.7",
-    "sqlite3": "~2.1.14"
+    "sqlite3": "~2.1.14",
+    "socket.io": "~0.9.16"
   }
 }

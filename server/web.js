@@ -13,7 +13,7 @@ nconf.argv()
      .file({ file: 'config.json' });
 nconf.defaults({
     'DEVICE': '/dev/ttyACM0',
-    'PORT': '4000'
+    'PORT': '12000'
 });
 
 // Database setup

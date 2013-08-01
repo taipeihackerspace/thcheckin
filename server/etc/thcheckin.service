@@ -1,0 +1,21 @@
+## Systemd Service File for autostart
+[Unit]
+Description=Hackerspace NodeJS Checkin Server
+After=syslog.target  
+After=network.target
+Requires=network.target
+
+[Service]
+Type=forking
+WorkingDirectory=/path/to/server
+ExecStart=/usr/bin/forever start -a --logFile web.log --pidFile /run/thcheckin.pid --minUptime 5000 --spinSleepTime 5000 web.js
+ExecStop=/usr/bin/forever stop web.js
+PIDFile=/run/thcheckin.pid
+User=user
+Group=group
+
+# Give a reasonable amount of time for the server to start up/shut down
+TimeoutSec=30
+
+[Install]
+WantedBy=multi-user.target

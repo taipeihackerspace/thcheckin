@@ -34,6 +34,26 @@ db.serialize(function() {
 	   });
 });
 
+var cleanStaleCheckins = function() {
+    var now = new Date()
+    var threshold = now - 24 * 60 * 60 * 1000;  // that's 24h ago
+
+    db.serialize(function() {
+	db.run("UPDATE people SET checkin=NULL WHERE id in (SELECT id FROM people WHERE checkin<?)", threshold, function (err, row) {
+	    if (err) {
+		console.log("Error removing stale checkins!")
+	    };
+	});
+	db.all("SELECT name,checkin FROM people WHERE checkin IS NOT NULL", function(err, rows) {
+	    var out = { people:  [] };
+	    for (var i = 0; i < rows.length; i++) {
+		out.people.push(rows[i]);
+	    }
+	    sio.sockets.emit('people', out);
+	});
+    });
+}
+
 // Set up web interface
 var app = express();
 app.use(express.logger());
@@ -162,3 +182,6 @@ app.get('/inspace', function(req, res){
 app.get('/', function(req, res){
     res.send("Not quite there yet.");
 });
+
+cleanStaleCheckins(); // Clean stale on startup
+repeatClear = setInterval(function() { cleanStaleCheckins() }, 60*60*1000);  // Clear stale checkins once every hour

@@ -1,6 +1,6 @@
 {
   "name": "thcheckin-server",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Gergely Imreh <imrehg@gmail.com>",
   "description": "Web server to co-ordinate check-in/out data",
   "scripts": {

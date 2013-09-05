@@ -36,7 +36,7 @@ db.serialize(function() {
 
 var cleanStaleCheckins = function() {
     var now = new Date()
-    var threshold = now - 24 * 60 * 60 * 1000;  // that's 24h ago
+    var threshold = now - 16 * 60 * 60 * 1000;  // that's 16h ago
 
     db.serialize(function() {
 	db.run("UPDATE people SET checkin=NULL WHERE id in (SELECT id FROM people WHERE checkin<?)", threshold, function (err, row) {

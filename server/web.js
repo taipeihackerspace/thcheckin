@@ -68,10 +68,7 @@ server.listen(port, function(){
 
 var sio = io.listen(server);
 sio.set('transports', [
-    'websocket'
-  , 'flashsocket'
-  , 'htmlfile'
-  , 'xhr-polling'
+    'xhr-polling'
   , 'jsonp-polling'
 ]);
 

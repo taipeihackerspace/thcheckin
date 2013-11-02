@@ -6,6 +6,7 @@ var fs = require('fs')
   , io = require('socket.io')
   , http = require('http')
   , cronJob = require('cron').CronJob
+  , crypto = require('crypto')
   ;
 
 // Configuration
@@ -184,6 +185,62 @@ app.get('/inspace', function(req, res){
 	}
 	res.jsonp(out);
     });
+});
+
+var showAdmin = function(req, res) {
+    var out = { people: [] }
+    db.all("SELECT name,checkin FROM people WHERE checkin IS NOT NULL", function(err, rows) {
+	for (var i = 0; i < rows.length; i++) {
+	    out.people.push(rows[i]);
+	}
+	res.render('admin',
+		   { layout: false
+		     , people: out.people
+		   }
+		  );
+    });
+}
+
+// Show the admin interface
+app.get('/admin', showAdmin);
+
+// Remove selected checked in user with password
+app.post('/admin', function(req, res) {
+    var checkout = req.body.checkout;
+    if (checkout) {
+	var pass = req.body.token;
+	var token = crypto.createHash('md5').update(pass).digest("hex");
+	console.log(token);
+	db.get("SELECT COUNT(*) FROM tokens WHERE token=?", token, function(err, row) {
+	    var matched = row['COUNT(*)'] == 1;
+	    if (matched) {
+		db.serialize(function() {
+		    for (var i = 0 ; i < checkout.length ; i++ ) {
+			var removed = checkout[i].split("@");
+			var name = removed[0]
+			  , checkin = Number(removed[1]);
+			db.run("UPDATE people SET checkin=NULL WHERE name=? AND checkin=?", name, checkin, function (err, row) {
+			    if (err) {
+				console.log("Error removing stale checkins!")
+			    };
+			});
+		    }
+		    db.all("SELECT name,checkin FROM people WHERE checkin IS NOT NULL", function(err, rows) {
+			var out = { people:  [] };
+			for (var i = 0; i < rows.length; i++) {
+			    out.people.push(rows[i]);
+			}
+			sio.sockets.emit('people', out);
+			showAdmin(req, res);
+		    });
+		});
+	    } else {
+		showAdmin(req, res);
+	    }
+	});
+    } else {
+	showAdmin(req, res);
+    }
 });
 
 app.get('/', function(req, res){

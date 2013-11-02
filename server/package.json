@@ -14,8 +14,8 @@
   "dependencies": {
     "express": "~3.3.8",
     "serialport": "~1.1.3",
-    "nconf": "~0.6.7",
-    "sqlite3": "~2.1.18",
+    "nconf": "~0.6.8",
+    "sqlite3": "~2.1.19",
     "socket.io": "~0.9.16",
     "cron": "~1.0.1"
   }

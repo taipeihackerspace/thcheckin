@@ -1,0 +1,57 @@
+<html>
+<head>
+<title>Hackerspace Checkin Admin Interface</title>
+<style>
+td {
+   align: center;
+}
+</style>
+<script src="../js/moment.min.js"></script>
+<script>
+var times = function(timestamp) {
+  var m = moment(Number(timestamp));
+  return m.calendar() + '<br/>('+ m.fromNow() +')';
+};
+</script>
+</head>
+<body>
+<h1>Admin interface</h1>
+<div>
+<h2>Remote logout</h2>
+<% if (people.length == 0) { %>
+   No-one's home.
+<% } else { %>
+<form method="post" action="../admin">
+<table border="1">
+  <tr><th>Name</th><th>Time</th><th>Select</th></tr>
+<% people.forEach(function(user){ %>
+  <tr><td><%= user.name %></td>
+      <td class="times"><%= user.checkin %></td>
+      <td align=center><input type="checkbox" name="checkout[]" value="<%=user.name%>@<%= user.checkin%>"></td>
+  </tr>
+<% }); %>
+</table>
+
+<div style="padding: 20 0 10 0;">
+Token: <input type="password" name="token"></input>
+</div>
+
+<div style="padding: 10 0 10 0;">
+<input type="submit" value="Check out"></input>
+</div>
+
+</form>
+
+<% } %>
+</ul>
+</div>
+
+<script>
+var elems = document.getElementsByClassName('times');
+for (var i = 0; i < elems.length; i++) {
+   var item = elems[i];
+   item.innerHTML = times(item.innerHTML);
+};
+</script>
+</body>
+</html>

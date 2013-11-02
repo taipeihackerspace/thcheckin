@@ -33,6 +33,13 @@ db.serialize(function() {
 		   console.log('Checkin list database already exists')
 	       }
 	   });
+
+    db.run("CREATE TABLE tokens (id INTEGER PRIMARY KEY NOT NULL, token VARCHAR(25))",
+	   function(err) {
+	       if (err) {
+		   console.log('Tokens database already exists')
+	       }
+	   });
 });
 
 var cleanStaleCheckins = function() {

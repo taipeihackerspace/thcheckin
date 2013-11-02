@@ -5,6 +5,7 @@ var fs = require('fs')
   , express = require('express')
   , io = require('socket.io')
   , http = require('http')
+  , cronJob = require('cron').CronJob
   ;
 
 // Configuration
@@ -182,4 +183,7 @@ app.get('/', function(req, res){
 });
 
 cleanStaleCheckins(); // Clean stale on startup
-repeatClear = setInterval(function() { cleanStaleCheckins() }, 60*60*1000);  // Clear stale checkins once every hour
+var job = new cronJob({  cronTime: '*/15 * * * *'  // do a cleaning every 15 minutes
+		       , onTick: cleanStaleCheckins
+		       , start: true
+		      });

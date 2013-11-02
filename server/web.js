@@ -23,14 +23,14 @@ db.serialize(function() {
     db.run("CREATE TABLE people (id INTEGER PRIMARY KEY NOT NULL, name VARCHAR(60), cardid VARCHAR(25) UNIQUE, checkin DATETIME, checkinid INTEGER)",
 	   function(err) {
 	       if (err) {
-		   console.log('Database already exists')
+		   console.log('People database already exists')
 	       }
 	   });
 
     db.run("CREATE TABLE checkinlist (id INTEGER PRIMARY KEY NOT NULL, cardid VARCHAR(25), eventtime DATETIME, eventtype INTEGER, FOREIGN KEY(cardid) REFERENCES people(cardid))",
 	   function(err) {
 	       if (err) {
-		   console.log('Database already exists')
+		   console.log('Checkin list database already exists')
 	       }
 	   });
 });

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "author": "Gergely Imreh <imrehg@gmail.com>",
   "description": "Web server to co-ordinate check-in/out data",
+  "repository": "https://github.com/taipeihackerspace/thcheckin",
   "scripts": {
     "start": "node web.js"
   },

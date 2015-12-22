@@ -77,11 +77,6 @@ server.listen(port, function(){
 });
 
 var sio = io.listen(server);
-sio.set('transports', [
-    'websocket'
-  , 'xhr-polling'
-  , 'jsonp-polling'
-]);
 
 // Serial Port setup
 var SerialPort = serialport.SerialPort;
